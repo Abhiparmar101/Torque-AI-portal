@@ -17,7 +17,7 @@ from apps.authentication.models import Users
 
 from apps.authentication.util import verify_pass
 import secrets
-
+import jwt
 @blueprint.route('/')
 def route_default():
     return redirect(url_for('authentication_blueprint.login'))
@@ -55,7 +55,13 @@ def login():
 
 def generate_new_session_id():
         return secrets.token_hex(16)
-
+def generate_token(user_id):
+    payload = {
+        'user_id': user_id,
+        #'exp': datetime.utcnow() + timedelta(days=1)  # Token expiration time
+    }
+    token = jwt.encode(payload, algorithm='HS256')
+    return token
 @blueprint.route('/register', methods=['GET', 'POST'])
 def register():
     create_account_form = CreateAccountForm(request.form)
